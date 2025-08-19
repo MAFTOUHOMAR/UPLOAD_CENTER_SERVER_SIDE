@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -7,6 +15,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
 
 @ApiTags('Categories')
@@ -44,5 +53,26 @@ export class CategoryController {
   })
   async findAll() {
     return this.categoryService.findAll();
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Delete a category' })
+  @ApiParam({ name: 'id', description: 'Category ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Category not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Cannot delete category with applications',
+  })
+  async delete(@Param('id') id: string) {
+    return this.categoryService.delete(id);
   }
 }

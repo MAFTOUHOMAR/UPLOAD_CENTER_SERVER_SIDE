@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Delete,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
@@ -68,5 +76,37 @@ export class ApplicationController {
   })
   async getAppsByCategory(@Param('categoryId') categoryId: string) {
     return this.appService.findByCategory(categoryId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get an application by ID' })
+  @ApiParam({ name: 'id', description: 'Application ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Application found successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Application not found',
+  })
+  async findById(@Param('id') id: string) {
+    return this.appService.findById(id);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Delete an application' })
+  @ApiParam({ name: 'id', description: 'Application ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Application deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Application not found',
+  })
+  async delete(@Param('id') id: string) {
+    return this.appService.delete(id);
   }
 }

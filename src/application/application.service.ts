@@ -133,4 +133,66 @@ export class ApplicationService {
       data: applications,
     };
   }
+
+  async findById(id: string) {
+    try {
+      const application = await this.prisma.application.findUnique({
+        where: { id },
+        include: {
+          category: true,
+        },
+      });
+
+      if (!application) {
+        return {
+          success: false,
+          message: 'Application not found',
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Application found successfully',
+        data: application,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to find application',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  async delete(id: string) {
+    try {
+      // Check if application exists
+      const application = await this.prisma.application.findUnique({
+        where: { id },
+      });
+
+      if (!application) {
+        return {
+          success: false,
+          message: 'Application not found',
+        };
+      }
+
+      // Delete the application
+      await this.prisma.application.delete({
+        where: { id },
+      });
+
+      return {
+        success: true,
+        message: 'Application deleted successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to delete application',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
 }

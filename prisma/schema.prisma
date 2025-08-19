@@ -24,11 +24,20 @@ model Category {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String       @unique
   description String?
+  icon        CategoryIcon @default(Smartphone)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   applications Application[]
 
   @@map("categories")
+}
+
+enum CategoryIcon {
+  Smartphone
+  Globe
+  Monitor
+  Shield
+  Box
 }
 
 model Application {
