@@ -84,7 +84,6 @@ export class CategoryService {
 
   async delete(id: string) {
     try {
-      // Check if category exists
       const category = await this.prisma.category.findUnique({
         where: { id },
         include: {
@@ -103,7 +102,6 @@ export class CategoryService {
         };
       }
 
-      // Check if category has applications
       if (category._count.applications > 0) {
         return {
           success: false,
@@ -111,7 +109,6 @@ export class CategoryService {
         };
       }
 
-      // Delete the category
       await this.prisma.category.delete({
         where: { id },
       });
