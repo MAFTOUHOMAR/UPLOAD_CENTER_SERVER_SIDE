@@ -46,10 +46,26 @@ model Application {
   description String?
   size        String
   downloadLink String?
+  platform    Platform
   categoryId  String      @db.ObjectId
   category    Category    @relation(fields: [categoryId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@map("applications")
+}
+
+type Platform {
+  icon   String
+  title  PlatformType
+}
+
+enum PlatformType {
+  ios
+  android
+  windows
+  mac
+  linux
+  web
+  other
 }

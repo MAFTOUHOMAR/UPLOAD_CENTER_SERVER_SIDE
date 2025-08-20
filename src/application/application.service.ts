@@ -69,6 +69,13 @@ export class ApplicationService {
       };
     }
 
+    if (!dto.platform || !dto.platform.title) {
+      return {
+        success: false,
+        message: 'Platform title is required',
+      };
+    }
+
     const category = await this.prisma.category.findUnique({
       where: { id: dto.categoryId },
     });
@@ -99,6 +106,10 @@ export class ApplicationService {
           categoryId: dto.categoryId,
           downloadLink: dto.downloadLink,
           size: size?.toString() || '0',
+          platform: {
+            icon: category.icon,
+            title: dto.platform.title,
+          },
         },
       }),
     };
@@ -118,6 +129,29 @@ export class ApplicationService {
 
     const applications = await this.prisma.application.findMany({
       where: { categoryId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        size: true,
+        downloadLink: true,
+        categoryId: true,
+        createdAt: true,
+        updatedAt: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
+        platform: {
+          select: {
+            icon: true,
+            title: true,
+          },
+        },
+      },
     });
 
     if (applications.length === 0) {
@@ -138,8 +172,28 @@ export class ApplicationService {
     try {
       const application = await this.prisma.application.findUnique({
         where: { id },
-        include: {
-          category: true,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          size: true,
+          downloadLink: true,
+          categoryId: true,
+          createdAt: true,
+          updatedAt: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              icon: true,
+            },
+          },
+          platform: {
+            select: {
+              icon: true,
+              title: true,
+            },
+          },
         },
       });
 
@@ -166,7 +220,6 @@ export class ApplicationService {
 
   async delete(id: string) {
     try {
-      // Check if application exists
       const application = await this.prisma.application.findUnique({
         where: { id },
       });
